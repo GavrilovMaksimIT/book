@@ -1,7 +1,48 @@
 import { useState } from 'react'
 
-function App() {
-  const [contacts, setContacts] = useState([])
+type Contact = {
+  id: number
+  name: string
+  phone: string
+}
+
+type ContactCardProps = {
+  contact: Contact
+  onDelete: (id: number) => void
+}
+
+type ContactListProps = {
+  contacts: Contact[]
+  onDelete: (id: number) => void
+}
+
+function ContactCard({ contact, onDelete }: ContactCardProps) {
+  return (
+    <div className="flex justify-between items-center p-3 border-b">
+      <div>
+        <div className="font-semibold">{contact.name}</div>
+        <div className="text-gray-500">{contact.phone}</div>
+      </div>
+      <button
+        onClick={() => onDelete(contact.id)}
+        className="text-red-600 hover:text-red-900" >Удалить</button>
+    </div>
+  )
+}
+
+function ContactList({ contacts, onDelete }: ContactListProps) {
+  return (
+    <div className="max-w-md mx-auto bg-gray-200 p-6 rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-4">Контакты ({contacts.length})</h2>
+      {contacts.map(contact => (
+        <ContactCard key={contact.id} contact={contact} onDelete={onDelete} />
+      ))}
+    </div>
+  )
+}
+
+export default function App() {
+  const [contacts, setContacts] = useState<Contact[]>([])
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
 
@@ -13,7 +54,7 @@ function App() {
     }
   }
 
-  const deletephone = (id) => {
+  const deleteContact = (id: number) => {
     setContacts(contacts.filter(c => c.id !== id))
   }
 
@@ -35,25 +76,9 @@ function App() {
         />
         <button
           onClick={addContact}
-          className="w-full bg-purple-800 text-white p-3 rounded hover: border-l-purple-900">Добавить
-        </button>
+          className="w-full bg-purple-800 text-white p-3 rounded"> Добавить</button>
       </div>
-      <div className="max-w-md mx-auto bg-gray-200 p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-4">Контакты ({contacts.length})</h2>
-        {contacts.map((contact) => (
-          <div key={contact.id} className="flex justify-between items-center p-3 border-b">
-            <div>
-              <div className="font-semibold">{contact.name}</div>
-              <div className="text-gray-500">{contact.phone}</div>
-            </div>
-            <button
-              onClick={() => deletephone(contact.id)}
-              className="text-red-600 hover:text-red-900">Удалить</button>
-          </div>
-        ))}
-      </div>
+      <ContactList contacts={contacts} onDelete={deleteContact} />
     </div>
   )
 }
-
-export default App
